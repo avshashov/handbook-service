@@ -1,0 +1,44 @@
+[tool.poetry]
+name = "handbook-service"
+version = "0.1.0"
+description = ""
+authors = ["Artem Shashov <tauquantum@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "0.115.12"
+uvicorn = "0.34.2"
+sqlalchemy = "2.0.41"
+asyncpg = "0.30.0"
+alembic = "1.15.2"
+pydantic = "2.11.4"
+pydantic-settings = "2.9.1"
+pyyaml = "6.0.2"
+greenlet = "3.2.2"
+
+
+[tool.poetry.group.dev.dependencies]
+ruff = "0.11.10"
+isort = "6.0.1"
+mypy = "1.15.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 109
+
+[tool.ruff.format]
+quote-style = "single"
+skip-magic-trailing-comma = true
+docstring-code-format = true
+
+[tool.ruff.lint]
+select = ["ANN", "E", "F", "B", "SIM", "I"]
+ignore = ["ANN002", "ANN003", "ANN204"]
+
+[tool.ruff.lint.isort]
+split-on-trailing-comma = false
+case-sensitive = true
