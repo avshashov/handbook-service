@@ -22,4 +22,4 @@ class DBConnection:
             yield session
 
 
-database = DBConnection(db_settings=settings)
+database = DBConnection(db_settings=settings.database)
