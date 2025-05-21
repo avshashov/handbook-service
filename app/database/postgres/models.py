@@ -53,7 +53,7 @@ class Organization(Base):
             select(cls)
             .join(Activity.organizations)
             .where(Activity.activity_id.in_(activity_ids))
-            .options(selectinload(cls.activities), selectinload(cls.building))
+            .options(selectinload(cls.phones), selectinload(cls.activities), selectinload(cls.building))
         )
 
         result = await session.execute(query)
@@ -67,7 +67,7 @@ class Organization(Base):
             select(cls)
             .join(Building)
             .where(Building.latitude.between(min_lat, max_lat), Building.longitude.between(min_lon, max_lon))
-            .options(selectinload(cls.building), selectinload(cls.activities))
+            .options(selectinload(cls.phones), selectinload(cls.building), selectinload(cls.activities))
         )
 
         result = await session.execute(query)
@@ -78,7 +78,7 @@ class Organization(Base):
         query = (
             select(cls)
             .where(cls.organization_id == organization_id)
-            .options(selectinload(cls.building), selectinload(cls.activities))
+            .options(selectinload(cls.phones), selectinload(cls.building), selectinload(cls.activities))
         )
         result = await session.execute(query)
         return result.scalar()
@@ -89,7 +89,7 @@ class Organization(Base):
             select(cls)
             .join(Building)
             .where(cls.name.like(f'%{name}%'))
-            .options(selectinload(cls.building), selectinload(cls.activities))
+            .options(selectinload(cls.phones), selectinload(cls.building), selectinload(cls.activities))
         )
         return list(result.scalars())
 
