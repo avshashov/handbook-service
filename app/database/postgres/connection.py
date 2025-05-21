@@ -8,10 +8,7 @@ from config import DatabaseSettings, settings
 class DBConnection:
     def __init__(self, db_settings: DatabaseSettings) -> None:
         self._settings = db_settings
-        self.engine = create_async_engine(
-            url=db_settings.get_url().encoded_string(),
-            echo=db_settings.debug,
-        )
+        self.engine = create_async_engine(url=db_settings.get_url().encoded_string(), echo=db_settings.debug)
         self.async_session = async_sessionmaker(bind=self.engine, autoflush=False, expire_on_commit=False)
 
     async def get_session(self) -> AsyncGenerator[AsyncSession, None]:
