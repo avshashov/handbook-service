@@ -1,7 +1,7 @@
 import typing
 
 import yaml
-from pydantic import BaseModel, PostgresDsn
+from pydantic import BaseModel, PostgresDsn, SecretStr
 from pydantic_settings import BaseSettings
 
 
@@ -29,8 +29,14 @@ class DatabaseSettings(BaseModel):
         )
 
 
+class AuthenticationSettings(BaseModel):
+    enabled: bool
+    api_key: SecretStr
+
+
 class Settings(BaseSettings):
     database: DatabaseSettings
+    authentication: AuthenticationSettings
 
     @classmethod
     def from_yaml(cls, file_path: str) -> typing.Self:
