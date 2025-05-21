@@ -13,8 +13,6 @@ class DatabaseSettings(BaseModel):
     user: str
     password: str | None = None
     database: str
-    pool_size: int
-    max_overflow: int
     debug: bool = False
 
     def get_url(self) -> PostgresDsn:
