@@ -42,3 +42,8 @@ ignore = ["ANN002", "ANN003", "ANN204"]
 [tool.ruff.lint.isort]
 split-on-trailing-comma = false
 case-sensitive = true
+
+[tool.mypy]
+disable_error_code = ["import-untyped"]
+pretty = true
+check_untyped_defs = true
