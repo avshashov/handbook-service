@@ -44,6 +44,55 @@ class Organization(Base):
         result = await session.execute(query)
         return list(result.scalars().unique())
 
+    @classmethod
+    async def get_by_activity_ids(cls, session: AsyncSession, activity_ids: list[int]) -> list[typing.Self]:
+        if not activity_ids:
+            return []
+
+        query = (
+            select(cls)
+            .join(Activity.organizations)
+            .where(Activity.activity_id.in_(activity_ids))
+            .options(selectinload(cls.activities), selectinload(cls.building))
+        )
+
+        result = await session.execute(query)
+        return list(result.scalars().unique())
+
+    @classmethod
+    async def get_by_bounding_box(
+        cls, session: AsyncSession, min_lat: float, max_lat: float, min_lon: float, max_lon: float
+    ) -> list[typing.Self]:
+        query = (
+            select(cls)
+            .join(Building)
+            .where(Building.latitude.between(min_lat, max_lat), Building.longitude.between(min_lon, max_lon))
+            .options(selectinload(cls.building), selectinload(cls.activities))
+        )
+
+        result = await session.execute(query)
+        return list(result.scalars())
+
+    @classmethod
+    async def get_by_id(cls, session: AsyncSession, organization_id: int) -> typing.Self | None:
+        query = (
+            select(cls)
+            .where(cls.organization_id == organization_id)
+            .options(selectinload(cls.building), selectinload(cls.activities))
+        )
+        result = await session.execute(query)
+        return result.scalar()
+
+    @classmethod
+    async def search_by_name(cls, session: AsyncSession, name: str) -> list[typing.Self]:
+        result = await session.execute(
+            select(cls)
+            .join(Building)
+            .where(cls.name.like(f'%{name}%'))
+            .options(selectinload(cls.building), selectinload(cls.activities))
+        )
+        return list(result.scalars())
+
 
 class Activity(Base):
     __tablename__ = 'activity'
@@ -62,6 +111,14 @@ class Activity(Base):
     organizations: Mapped[list[Organization]] = relationship(
         secondary=organization_activity, back_populates='activities'
     )
+
+    @classmethod
+    async def get_all_child_activity_ids(cls, session: AsyncSession, root_activity_id: int) -> list[int]:
+        cte = select(cls.activity_id).where(cls.activity_id == root_activity_id).cte(recursive=True)
+        cte = cte.union_all(select(cls.activity_id).join(cte, cls.parent_id == cte.c.activity_id))
+
+        result = await session.execute(select(cte.c.activity_id))
+        return list(result.scalars())
 
 
 class OrganizationPhone(Base):
