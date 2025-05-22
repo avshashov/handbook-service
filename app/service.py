@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from app.api.v1.router import router as router_v1
+from app.api.router import main_router
 from app.middleware import APIKeyMiddleware
 from config import settings
 
@@ -21,7 +21,7 @@ class HandbookService:
         app = FastAPI()
         if settings.authentication.enabled:
             app.add_middleware(APIKeyMiddleware, app_key=settings.authentication.api_key.get_secret_value())
-        app.include_router(router=router_v1)
+        app.include_router(router=main_router)
         return app
 
     @property
