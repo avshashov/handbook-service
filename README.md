@@ -22,7 +22,7 @@ alembic upgrade head
 
 ### Step 4. Launch the application
 ```
-fastapi run main.py
+uvicorn main:app
 ```
 
 ### Step 5. Optional: Run via Docker Compose
@@ -31,15 +31,12 @@ docker compose up --build -d
 ```
 
 ### Step 6. Optional: Load test data
+Use the provided test_data.sql script to populate the database:  
 If running locally (with Poetry):
-Use the provided test_data.sql script to populate the database:
 ```
-psql -h localhost -U your_db_user -d your_db_name -f test_data.sql
+psql -h localhost -U your_db_user -d handbook_service -f test_data.sql
 ```
 If running via Docker Compose:
-Test data will be loaded automatically on first launch thanks to the mounted init script.
 ```
-db:
-  volumes:
-    - ./test_data.sql:/docker-entrypoint-initdb.d/test_data.sql
+docker exec -i database psql -U your_db_user -d handbook_service < test_data.sql
 ```
